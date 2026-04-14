@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circadia-Space | Pitch Deck</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #05070a;
+            color: #e2e8f0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0; left: 0;
+            padding: 4rem 6rem;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        /* Starfield background */
+        .stars {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at bottom, #0d1b2a 0%, #05070a 100%);
+            z-index: -2;
+        }
+        .stars::before {
+            content: '';
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image:
+                radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+                radial-gradient(1px 1px at 25% 55%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+                radial-gradient(1px 1px at 60% 75%, rgba(255,255,255,0.3) 0%, transparent 100%),
+                radial-gradient(1px 1px at 75% 35%, rgba(255,255,255,0.6) 0%, transparent 100%),
+                radial-gradient(1px 1px at 85% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 90% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+                radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.3) 0%, transparent 100%),
+                radial-gradient(1px 1px at 50% 45%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 70% 90%, rgba(255,255,255,0.5) 0%, transparent 100%);
+        }
+
+        /* Subtle grid overlay */
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: -1;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1rem;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 30px rgba(56, 189, 248, 0.6);
+        }
+
+        .accent-line {
+            width: 4px;
+            background: linear-gradient(to bottom, #38bdf8, #818cf8);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .stat-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* Progress / nav bar */
+        #nav-bar {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(15,23,42,0.85);
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            padding: 0.6rem 1.25rem;
+            border-radius: 9999px;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dot.active { background: #38bdf8; box-shadow: 0 0 8px #38bdf8; }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            transition: color 0.2s;
+        }
+        .nav-btn:hover { color: #38bdf8; }
+
+        #slide-counter {
+            font-size: 0.7rem;
+            color: #64748b;
+            font-family: monospace;
+            min-width: 3rem;
+            text-align: center;
+        }
+
+        /* Slide-specific */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; width: 100%; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; width: 100%; }
+
+        .step-number {
+            width: 2rem; height: 2rem;
+            border-radius: 50%;
+            background: rgba(56,189,248,0.15);
+            border: 1px solid rgba(56,189,248,0.4);
+            color: #38bdf8;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .tier-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+        }
+
+        .tier-card.highlight {
+            border-color: rgba(56,189,248,0.35);
+            background: rgba(56,189,248,0.05);
+        }
+
+        .roadmap-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .roadmap-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        /* Slide transition */
+        .slide { opacity: 0; transition: opacity 0.35s ease; }
+        .slide.active { opacity: 1; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .slide.active .animate-in { animation: fadeUp 0.5s ease forwards; }
+        .slide.active .animate-in:nth-child(2) { animation-delay: 0.1s; }
+        .slide.active .animate-in:nth-child(3) { animation-delay: 0.2s; }
+        .slide.active .animate-in:nth-child(4) { animation-delay: 0.3s; }
+        .slide.active .animate-in:nth-child(5) { animation-delay: 0.4s; }
+
+        .status-pulse {
+            width: 8px; height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #10b981;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); }
+            70%  { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+            100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stars"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- ══════════════════════════════════════════
+         SLIDE 1 — TITLE
+    ══════════════════════════════════════════ -->
+    <section class="slide active" id="slide-1">
+        <div class="animate-in">
+            <span class="badge"><i class="fa-solid fa-satellite"></i> Massachusetts Space Week 2026 · OSMED Hackathon</span>
+        </div>
+        <div class="mt-6 animate-in">
+            <h1 class="text-7xl font-extrabold tracking-tight text-sky-400 glow-text leading-none">
+                CIRCADIA<br><span class="text-white">SPACE</span>
+            </h1>
+        </div>
+        <div class="mt-4 animate-in">
+            <p class="text-xl text-slate-300 font-light max-w-xl">
+                AI-Driven Scotobiology for Earth &amp; Orbit.<br>
+                Protecting the biological clock from Boston to the Moon.
+            </p>
+        </div>
+        <div class="mt-8 flex items-center gap-6 animate-in">
+            <div class="glass-panel px-4 py-2 text-sm text-slate-400 flex items-center gap-2">
+                <i class="fa-solid fa-user-astronaut text-sky-400"></i>
+                <span>Lumina-Check AI &nbsp;·&nbsp; Multimodal Agentic Platform</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-slate-500">
+                <span class="status-pulse"></span> NASA VIIRS · Connected
+            </div>
+        </div>
+        <div class="mt-16 animate-in">
+            <p class="text-xs text-slate-600 tracking-widest uppercase">Press → or click to advance</p>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         SLIDE 2 — THE PROBLEM (EARTH)
+    ══════════════════════════════════════════ -->
+    <section class="slide" id="slide-2">
+        <div class="animate-in">
+            <span class="badge"><i class="fa-solid fa-triangle-exclamation"></i> The Problem</span>
+        </div>
+        <h2 class="text-5xl font-bold mt-4 animate-in">The Silent <span class="text-sky-400">Circadian Crisis</span></h2>
+        <p class="text-slate-400 mt-2 text-lg animate-in">Artificial Light at Night (ALAN) — a toxin hiding in plain sight.</p>
+
+        <div class="three-col mt-10 animate-in">
+            <div class="stat-card text-center">
+                <p class="text-5xl font-extrabold text-sky-400">99%</p>
+                <p class="text-sm text-slate-400 mt-2">of U.S. population affected by light pollution</p>
+            </div>
+            <div class="stat-card text-center">
+                <p class="text-5xl font-extrabold text-rose-400">$95B</p>
+                <p class="text-sm text-slate-400 mt-2">annual direct healthcare cost of sleep disorders</p>
+            </div>
+            <div class="stat-card text-center">
+                <p class="text-5xl font-extrabold text-amber-400">+40%</p>
+                <p class="text-sm text-slate-400 mt-2">increased risk of cardiovascular disease &amp; metabolic illness</p>
+            </div>
+        </div>
+
+        <div class="mt-6 animate-in glass-panel p-4 w-full flex items-start gap-4">
+            <div class="accent-line self-stretch"></div>
+            <div>
+                <p class="text-sm text-slate-300">
+                    Melatonin suppression caused by ALAN disrupts the circadian master clock, triggering a cascade of metabolic,
+                    hormonal, and cognitive dysfunction. This is not a lifestyle issue — it is a <span class="text-sky-400 font-semibold">public health emergency</span>.
+                </p>
+                <p class="text-xs text-slate-500 mt-1">+ $411B lost annually in national productivity</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         SLIDE 3 — THE PROBLEM (SPACE)
+    ══════════════════════════════════════════ -->
+    <section class="slide" id="slide-3">
+        <div class="animate-in">
+            <span class="badge" style="background:rgba(129,140,248,0.1);border-color:rgba(129,140,248,0.3);color:#818cf8;">
+                <i class="fa-solid fa-rocket"></i> Space Medicine
+            </span>
+        </div>
+        <h2 class="text-5xl font-bold mt-4 animate-in">The <span style="color:#818cf8">Orbital</span> Circadian Challenge</h2>
+        <p class="text-slate-400 mt-2 text-lg animate-in">On the ISS, astronauts experience 16 sunrises per day. Without regulation, the biological clock fails.</p>
+
+        <div class="two-col mt-10 animate-in">
+            <div class="space-y-4">
+                <div class="glass-panel p-4 flex items-start gap-4">
+                    <i class="fa-solid fa-brain text-2xl" style="color:#818cf8"></i>
+                    <div>
+                        <p class="font-semibold">Cognitive Decline</p>
+                        <p class="text-sm text-slate-400 mt-1">Sleep fragmentation impairs decision-making, reaction time, and mission-critical judgment during EVAs.</p>
+                    </div>
+                </div>
+                <div class="glass-panel p-4 flex items-start gap-4">
+                    <i class="fa-solid fa-heartbeat text-2xl text-rose-400"></i>
+                    <div>
+                        <p class="font-semibold">Physiological Drift</p>
+                        <p class="text-sm text-slate-400 mt-1">Long-duration missions cause metabolic instability, immune suppression, and hormonal dysregulation.</p>
+                    </div>
+                </div>
+                <div class="glass-panel p-4 flex items-start gap-4">
+                    <i class="fa-solid fa-moon text-2xl text-amber-400"></i>
+                    <div>
+                        <p class="font-semibold">No Natural Light Cycle</p>
+                        <p class="text-sm text-slate-400 mt-1">Lunar and deep-space habitats have zero natural circadian cues. Lighting must be autonomously managed.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel p-6 flex flex-col justify-center text-center" style="border-color:rgba(129,140,248,0.25);">
+                <i class="fa-solid fa-user-astronaut text-6xl mb-4" style="color:#818cf8;opacity:0.7"></i>
+                <p class="text-lg font-semibold text-slate-200">Earth → Moon → Mars</p>
+                <p class="text-sm text-slate-400 mt-2">Every long-duration mission amplifies the circadian problem. The further from Earth, the more critical autonomous health regulation becomes.</p>
+                <div class="mt-4 text-xs text-slate-500 font-mono">ISS · Artemis · Gateway · Mars Transit</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         SLIDE 4 — THE SOLUTION
+    ══════════════════════════════════════════ -->
+    <section class="slide" id="slide-4">
+        <div class="animate-in">
+            <span class="badge"><i class="fa-solid fa-wand-magic-sparkles"></i> The Solution</span>
+        </div>
+        <h2 class="text-5xl font-bold mt-4 animate-in">Introducing <span class="text-sky-400">Lumina-Check AI</span></h2>
+        <p class="text-slate-400 mt-2 text-lg animate-in">An autonomous agentic workflow that performs hyper-localized Circadian Efficiency Audits.</p>
+
+        <div class="mt-8 w-full animate-in">
+            <div class="flex items-start gap-0">
+                <!-- Step 1 -->
+                <div class="flex flex-col items-center flex-1">
+                    <div class="glass-panel p-4 w-full text-center" style="border-color:rgba(56,189,248,0.3)">
+                        <div class="step-number mx-auto mb-2">1</div>
+                        <p class="text-sm font-semibold text-sky-400">Ingest</p>
+                        <p class="text-xs text-slate-400 mt-1">User uploads night-sky image &amp; sleep metrics via Next.js interface</p>
+                    </div>
+                    <div class="text-sky-400 text-xl mt-2">→</div>
+                </div>
+                <!-- Step 2 -->
+                <div class="flex flex-col items-center flex-1">
+                    <div class="glass-panel p-4 w-full text-center" style="border-color:rgba(56,189,248,0.3)">
+                        <div class="step-number mx-auto mb-2">2</div>
+                        <p class="text-sm font-semibold text-sky-400">Vision Agent</p>
+                        <p class="text-xs text-slate-400 mt-1">Gemini multimodal model analyzes spectral glare &amp; estimates Bortle Scale</p>
+                    </div>
+                    <div class="text-sky-400 text-xl mt-2">→</div>
+                </div>
+                <!-- Step 3 -->
+                <div class="flex flex-col items-center flex-1">
+                    <div class="glass-panel p-4 w-full text-center" style="border-color:rgba(56,189,248,0.3)">
+                        <div class="step-number mx-auto mb-2">3</div>
+                        <p class="text-sm font-semibold text-sky-400">Geospatial Fusion</p>
+                        <p class="text-xs text-slate-400 mt-1">Modal.com backend queries NASA Black Marble (VIIRS) satellite radiance data</p>
+                    </div>
+                    <div class="text-sky-400 text-xl mt-2">→</div>
+                </div>
+                <!-- Step 4 -->
+                <div class="flex flex-col items-center flex-1">
+                    <div class="glass-panel p-4 w-full text-center" style="border-color:rgba(56,189,248,0.3)">
+                        <div class="step-number mx-auto mb-2">4</div>
+                        <p class="text-sm font-semibold text-sky-400">Health Audit</p>
+                        <p class="text-xs text-slate-400 mt-1">AI generates Personal Circadian Score with precise lighting interventions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 three-col animate-in">
+            <div class="stat-card flex items-center gap-3">
+                <i class="fa-solid fa-layer-group text-sky-400 text-xl"></i>
+                <div>
+                    <p class="text-sm font-semibold">Offline-First</p>
+                    <p class="text-xs text-slate-400">Runs on-habitat without connectivity</p>
+                </div>
+            </div>
+            <div class="stat-card flex items-center gap-3">
+                <i class="fa-solid fa-bolt text-amber-400 text-xl"></i>
+                <div>
+                    <p class="text-sm font-semibold">Low-Latency</p>
+                    <p class="text-xs text-slate-400">VIIRS sync verified at 0.4s</p>
+                </div>
+            </div>
+            <div class="stat-card flex items-center gap-3">
+                <i class="fa-solid fa-shield-halved text-green-400 text-xl"></i>
+                <div>
+                    <p class="text-sm font-semibold">Encrypted Sync</p>
+                    <p class="text-xs text-slate-400">Crew health data end-to-end secured</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         SLIDE 5 — LIVE DEMO
+    ══════════════════════════════════════════ -->
+    <section class="slide" id="slide-5">
+        <div class="animate-in">
+            <span class="badge"><i class="fa-solid fa-display"></i> Live Demo</span>
+        </div>
+        <h2 class="text-5xl font-bold mt-4 animate-in">The <span class="text-sky-400">Lumina-Check</span> Dashboard</h2>
+        <p class="text-slate-400 mt-2 text-lg animate-in">A working command-center interface for Circadian Efficiency Audits.</p>
+
+        <div class="mt-6 animate-in w-full">
+            <!-- Mini dashboard preview -->
+            <div class="glass-panel p-4 w-full" style="border-color:rgba(56,189,248,0.2);">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-user-astronaut text-sky-400"></i>
+                        <span class="font-bold text-sky-400 text-sm tracking-wider">CIRCADIA-SPACE</span>
+                        <span class="text-slate-500 text-xs">/ Agentic Scotobiology System</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-500">
+                        <span class="status-pulse"></span> Active Node: Boston_01 · NASA VIIRS Connected
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-3">
+                    <!-- Left: Upload -->
+                    <div class="col-span-3 space-y-2">
+                        <div class="glass-panel p-3" style="border-color:rgba(255,255,255,0.05);">
+                            <p class="text-xs text-sky-400 font-semibold mb-2"><i class="fa-solid fa-camera mr-1"></i> Local Light Census</p>
+                            <div class="border border-dashed border-slate-700 rounded p-3 text-center text-xs text-slate-500">
+                                <i class="fa-solid fa-cloud-arrow-up block text-2xl mb-1 text-slate-600"></i>
+                                Upload night-sky image
+                            </div>
+                            <div class="mt-2 bg-sky-700 rounded text-center text-xs py-1 font-semibold text-white">Initialize Agent Analysis</div>
+                        </div>
+                        <div class="glass-panel p-3" style="border-color:rgba(255,255,255,0.05);">
+                            <p class="text-xs font-semibold mb-2">Mission Parameters</p>
+                            <p class="flex justify-between text-xs border-b border-slate-800 pb-1 mb-1"><span class="text-slate-400">Location</span><span class="font-mono">42.36° N</span></p>
+                            <p class="flex justify-between text-xs border-b border-slate-800 pb-1 mb-1"><span class="text-slate-400">Source</span><span class="text-sky-400 font-mono">NASA VIIRS</span></p>
+                            <p class="flex justify-between text-xs"><span class="text-slate-400">Sync</span><span class="text-green-400">Active</span></p>
+                        </div>
+                    </div>
+                    <!-- Middle: Map -->
+                    <div class="col-span-6">
+                        <div class="glass-panel p-3 h-full" style="border-color:rgba(255,255,255,0.05);">
+                            <div class="flex justify-between mb-2">
+                                <p class="text-xs font-semibold">Scotobiology Map Overlay</p>
+                                <span class="text-xs bg-sky-900/50 text-sky-300 px-2 rounded">Live Heatmap</span>
+                            </div>
+                            <div class="rounded flex items-center justify-center relative" style="height:140px;background:radial-gradient(circle at center,#1e293b,#0f172a);">
+                                <svg viewBox="0 0 400 200" class="w-full h-full opacity-70" style="position:absolute;top:0;left:0;">
+                                    <circle cx="200" cy="100" r="60" fill="url(#hg2)" />
+                                    <defs>
+                                        <radialGradient id="hg2">
+                                            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35" />
+                                            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
+                                        </radialGradient>
+                                    </defs>
+                                    <circle cx="185" cy="90" r="3" fill="#38bdf8" />
+                                    <circle cx="215" cy="115" r="3" fill="#38bdf8" />
+                                    <circle cx="170" cy="120" r="2" fill="#818cf8" opacity="0.7"/>
+                                </svg>
+                                <div class="absolute top-2 left-2 bg-black/60 p-1 rounded text-[9px] font-mono z-10">LAT: 42.3601 / LON: -71.0589</div>
+                                <div class="absolute bottom-2 right-2 text-center z-10">
+                                    <p class="text-[9px] text-slate-400">Bortle Scale</p>
+                                    <p class="text-2xl font-bold text-sky-400">Class 7</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right: Score -->
+                    <div class="col-span-3 space-y-2">
+                        <div class="glass-panel p-3 text-center" style="background:linear-gradient(135deg,rgba(15,23,42,0.9),rgba(56,189,248,0.05));border-color:rgba(56,189,248,0.2);">
+                            <p class="text-xs text-sky-400 font-semibold mb-2">Circadian Score</p>
+                            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full border-2 border-sky-500/30 border-t-sky-400 mx-auto">
+                                <span class="text-xl font-bold">64</span>
+                            </div>
+                            <div class="mt-2 space-y-1 text-left">
+                                <p class="flex justify-between text-xs"><span>Melatonin:</span><span class="text-amber-400">Delayed</span></p>
+                                <p class="flex justify-between text-xs"><span>Spectral Risk:</span><span class="text-rose-400">High</span></p>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-3" style="border-color:rgba(255,255,255,0.05);">
+                            <p class="text-[9px] uppercase tracking-widest text-slate-500 mb-2">Agent Recommendations</p>
+                            <ul class="space-y-1 text-[9px] text-slate-300">
+                                <li><i class="fa-solid fa-circle-info text-sky-400 mr-1"></i> Apply 3000K warm-spectrum shielding</li>
+                                <li><i class="fa-solid fa-clock text-amber-400 mr-1"></i> Blue-light curfew → 20:30 EST</li>
+                                <li><i class="fa-solid fa-shield-halved text-green-400 mr-1"></i> Moderate metabolic stress zone</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer stats -->
+                <div class="grid grid-cols-4 gap-2 mt-3">
+                    <div class="glass-panel p-2 flex justify-between items-center" style="border-color:rgba(255,255,255,0.05);">
+                        <span class="text-[9px] text-slate-400">Health Payer ROI</span>
+                        <span class="text-green-400 font-bold text-xs">+$7.2k</span>
+                    </div>
+                    <div class="glass-panel p-2 flex justify-between items-center" style="border-color:rgba(255,255,255,0.05);">
+                        <span class="text-[9px] text-slate-400">Energy Δ</span>
+                        <span class="text-sky-400 font-bold text-xs">-18.4%</span>
+                    </div>
+                    <div class="glass-panel p-2 flex justify-between items-center" style="border-color:rgba(255,255,255,0.05);">
+                        <span class="text-[9px] text-slate-400">Crew Readiness</span>
+                        <span class="text-green-400 font-bold text-xs">Optimal</span>
+                    </div>
+                    <div class="glass-panel p-2 flex justify-between items-center" style="border-color:rgba(255,255,255,0.05);">
+                        <span class="text-[9px] text-slate-400">NASA Sync</span>
+                        <span class="text-slate-400 font-mono text-[9px]">VERIFIED_0.4s</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         SLIDE 6 — MARKET STRATEGY
+    ══════════════════════════════════════════ -->
+    <section class="slide" id="slide-6">
+        <div class="animate-in">
+            <span class="badge"><i class="fa-solid fa-chart-pie"></i> Market Strategy</span>
+        </div>
+        <h2 class="text-5xl font-bold mt-4 animate-in">Three <span class="text-sky-400">High-Value</span> Markets</h2>
+        <p class="text-slate-400 mt-2 text-lg animate-in">From Boston city halls to commercial space stations — one platform, three revenue streams.</p>
+
+        <div class="three-col mt-8 animate-in">
+            <!-- Municipal -->
+            <div class="tier-card space-y-3">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-city text-sky-400 text-xl"></i>
+                    <p class="font-bold text-sky-400">B2G · Municipal</p>
+                </div>
+                <p class="text-xs text-slate-400">City planners in Boston, Worcester, Cambridge</p>
+                <div class="border-t border-slate-800 pt-3 space-y-1">
+                    <p class="text-xs"><span class="text-slate-500">Service:</span> Circadian Risk Mapping</p>
+                    <p class="text-xs"><span class="text-slate-500">Value:</span> Dark-Sky streetlight retrofitting</p>
+                    <p class="text-sm font-bold text-white mt-2">$25k – $100k <span class="text-xs font-normal text-slate-400">/ audit</span></p>
+                </div>
+            </div>
+
+            <!-- Healthcare -->
+            <div class="tier-card highlight space-y-3">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-hospital text-green-400 text-xl"></i>
+                    <p class="font-bold text-green-400">B2B · Healthcare Payers</p>
+                </div>
+                <p class="text-xs text-slate-400">BCBS Massachusetts, biotech wellness programs</p>
+                <div class="border-t border-slate-800 pt-3 space-y-1">
+                    <p class="text-xs"><span class="text-slate-500">Service:</span> AI Wellness Integration</p>
+                    <p class="text-xs"><span class="text-slate-500">Value:</span> $7,000 saved per member/year</p>
+                    <p class="text-sm font-bold text-white mt-2">$50 – $150 <span class="text-xs font-normal text-slate-400">/ employee / yr</span></p>
+                </div>
+            </div>
+
+            <!-- Space -->
+            <div class="tier-card space-y-3" style="border-color:rgba(129,140,248,0.3);background:rgba(129,140,248,0.05);">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-rocket text-xl" style="color:#818cf8"></i>
+                    <p class="font-bold" style="color:#818cf8">Space Sector</p>
+                </div>
+                <p class="text-xs text-slate-400">SpaceX, Blue Origin, Axiom Space, NASA</p>
+                <div class="border-t border-slate-800 pt-3 space-y-1">
+                    <p class="text-xs"><span class="text-slate-500">Service:</span> Circadian Diagnostic Agent</p>
+                    <p class="text-xs"><span class="text-slate-500">Value:</span> Autonomous habitat LED regulation</p>
+                    <p class="text-sm font-bold text-white mt-2">$250k+ <span class="text-xs font-normal text-slate-400">/ yr licensing</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 glass-panel p-4 w-full animate-in flex items-center gap-6">
+            <div class="accent-line self-stretch"></div>
+            <div class="flex gap-8 text-sm">
+                <div><p class="text-slate-500 text-xs">Year 1 Revenue (Pilot)</p><p class="text-xl font-bold text-white">$225,000</p><p class="text-xs text-slate-500">3 MA Municipal Pilots</p></div>
+                <div class="border-l border-slate-800 pl-8"><p class="text-slate-500 text-xs">Year 3 Revenue (Scale)</p><p class="text-xl font-bold text-sky-400">$3.5M+</p><p class="text-xs text-slate-500">National + Aerospace Licensing</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         SLIDE 7 — ROADMAP
+    ══════════════════════════════════════════ -->
+    <section class="slide" id="slide-7">
+        <div class="animate-in">
+            <span class="badge"><i class="fa-solid fa-road"></i> Implementation Roadmap</span>
+        </div>
+        <h2 class="text-5xl font-bold mt-4 animate-in">Clear Path, <span class="text-sky-400">Defined Milestones</span></h2>
+        <p class="text-slate-400 mt-2 text-lg animate-in">From Boston pilot to LEO habitat integration in 18 months.</p>
+
+        <div class="two-col mt-8 animate-in" style="align-items:start;">
+            <div class="space-y-4">
+                <div class="roadmap-item">
+                    <div class="roadmap-dot mt-1" style="background:#38bdf8;box-shadow:0 0 8px #38bdf8;"></div>
+                    <div class="glass-panel p-4 flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="font-semibold text-sky-400">Q3 2026 — Pilot Launch</p>
+                            <span class="text-xs text-slate-500 font-mono">Phase 1</span>
+                        </div>
+                        <p class="text-sm text-slate-300">"Boston Light-Census": deploy with 500-resident cohort across 3 neighborhoods.</p>
+                        <p class="text-xs text-slate-500 mt-1">Target: 3 MA municipal contracts · $225k ARR</p>
+                    </div>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-dot mt-1" style="background:#10b981;box-shadow:0 0 8px #10b981;"></div>
+                    <div class="glass-panel p-4 flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="font-semibold text-green-400">Q1 2027 — Scale</p>
+                            <span class="text-xs text-slate-500 font-mono">Phase 2</span>
+                        </div>
+                        <p class="text-sm text-slate-300">Partner with a MA healthcare payer for zip-code health correlation study.</p>
+                        <p class="text-xs text-slate-500 mt-1">Target: BCBS MA integration · SaaS expansion</p>
+                    </div>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-dot mt-1" style="background:#818cf8;box-shadow:0 0 8px #818cf8;"></div>
+                    <div class="glass-panel p-4 flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="font-semibold" style="color:#818cf8">Q4 2027 — Space</p>
+                            <span class="text-xs text-slate-500 font-mono">Phase 3</span>
+                        </div>
+                        <p class="text-sm text-slate-300">Deliver first prototype "Circadian Diagnostic Agent" to LEO commercial habitat.</p>
+                        <p class="text-xs text-slate-500 mt-1">Target: Axiom / Blue Origin partnership · $250k+ licensing</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel p-6 flex flex-col justify-between h-full" style="border-color:rgba(56,189,248,0.15);">
+                <div>
+                    <p class="text-sm font-semibold text-slate-300 mb-4">Why OSMED, Why Now</p>
+                    <ul class="space-y-3 text-sm text-slate-400">
+                        <li class="flex gap-3"><i class="fa-solid fa-check text-sky-400 mt-0.5"></i> NASA VIIRS Black Marble data is publicly available and validated</li>
+                        <li class="flex gap-3"><i class="fa-solid fa-check text-sky-400 mt-0.5"></i> Commercial LEO stations (Axiom, Orbital Reef) breaking ground by 2028</li>
+                        <li class="flex gap-3"><i class="fa-solid fa-check text-sky-400 mt-0.5"></i> Artemis program creates immediate demand for autonomous crew health systems</li>
+                        <li class="flex gap-3"><i class="fa-solid fa-check text-sky-400 mt-0.5"></i> Massachusetts is the #1 biotech corridor — ideal launchpad</li>
+                    </ul>
+                </div>
+                <div class="mt-6 border-t border-slate-800 pt-4">
+                    <p class="text-xs text-slate-500">Operational efficiency advantage</p>
+                    <p class="text-sm text-slate-300 mt-1">AI replaces months of manual environmental studies with <span class="text-sky-400 font-semibold">automated, sub-second intelligence</span>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         SLIDE 8 — VISION / CLOSE
+    ══════════════════════════════════════════ -->
+    <section class="slide" id="slide-8">
+        <div class="animate-in w-full text-center flex flex-col items-center">
+            <span class="badge mb-6"><i class="fa-solid fa-star"></i> Our Mission</span>
+            <h2 class="text-6xl font-extrabold text-white animate-in leading-tight">
+                We don't just map the stars.<br>
+                <span class="text-sky-400 glow-text">We protect the rhythms</span><br>
+                that allow us to reach them.
+            </h2>
+
+            <div class="mt-10 three-col animate-in max-w-4xl">
+                <div class="stat-card text-center">
+                    <i class="fa-solid fa-city text-sky-400 text-2xl mb-2"></i>
+                    <p class="text-sm font-semibold">Earth</p>
+                    <p class="text-xs text-slate-400 mt-1">Protecting 330M Americans from the silent circadian crisis</p>
+                </div>
+                <div class="stat-card text-center" style="border-color:rgba(56,189,248,0.3);">
+                    <i class="fa-solid fa-wand-magic-sparkles text-sky-400 text-2xl mb-2"></i>
+                    <p class="text-sm font-semibold text-sky-400">Lumina-Check AI</p>
+                    <p class="text-xs text-slate-400 mt-1">The intelligence layer for human biological health, anywhere</p>
+                </div>
+                <div class="stat-card text-center" style="border-color:rgba(129,140,248,0.3);">
+                    <i class="fa-solid fa-rocket text-xl mb-2" style="color:#818cf8"></i>
+                    <p class="text-sm font-semibold" style="color:#818cf8">Orbit & Beyond</p>
+                    <p class="text-xs text-slate-400 mt-1">Autonomous circadian regulation for the next generation of space habitats</p>
+                </div>
+            </div>
+
+            <div class="mt-10 animate-in">
+                <p class="text-3xl font-bold text-white">Circadia-Space</p>
+                <p class="text-slate-400 mt-1">Massachusetts · 2026</p>
+                <div class="flex items-center justify-center gap-2 mt-3 text-xs text-slate-500">
+                    <span class="status-pulse"></span>
+                    <span>Lumina-Check AI · NASA VIIRS · Modal.com · Gemini Vision</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigation -->
+    <div id="nav-bar">
+        <button class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+        <div id="dots"></div>
+        <span id="slide-counter">1 / 8</span>
+        <button class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <script>
+        const totalSlides = 8;
+        let current = 1;
+
+        // Build dots
+        const dotsEl = document.getElementById('dots');
+        for (let i = 1; i <= totalSlides; i++) {
+            const d = document.createElement('div');
+            d.className = 'dot' + (i === 1 ? ' active' : '');
+            d.onclick = () => goTo(i);
+            dotsEl.appendChild(d);
+        }
+
+        function goTo(n) {
+            document.getElementById('slide-' + current).classList.remove('active');
+            dotsEl.children[current - 1].classList.remove('active');
+            current = Math.max(1, Math.min(totalSlides, n));
+            document.getElementById('slide-' + current).classList.add('active');
+            dotsEl.children[current - 1].classList.add('active');
+            document.getElementById('slide-counter').textContent = current + ' / ' + totalSlides;
+        }
+
+        function nextSlide() { goTo(current + 1); }
+        function prevSlide() { goTo(current - 1); }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+    </script>
+</body>
+</html>
