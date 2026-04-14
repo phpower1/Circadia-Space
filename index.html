@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circadia-Space | AI-Driven Scotobiology for Earth & Orbit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #05070a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at bottom, #0d1b2a 0%, #05070a 100%);
+            z-index: -2;
+        }
+        .stars::before {
+            content: '';
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image:
+                radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+                radial-gradient(1px 1px at 25% 55%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+                radial-gradient(1px 1px at 60% 75%, rgba(255,255,255,0.3) 0%, transparent 100%),
+                radial-gradient(1px 1px at 75% 35%, rgba(255,255,255,0.6) 0%, transparent 100%),
+                radial-gradient(1px 1px at 85% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 90% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+                radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.3) 0%, transparent 100%),
+                radial-gradient(1px 1px at 50% 45%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 70% 90%, rgba(255,255,255,0.5) 0%, transparent 100%);
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: -1;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1rem;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 30px rgba(56, 189, 248, 0.6);
+        }
+
+        .card-link {
+            display: flex;
+            flex-direction: column;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+            cursor: pointer;
+        }
+        .card-link:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(56, 189, 248, 0.08);
+        }
+        .card-link.purple:hover {
+            border-color: rgba(129, 140, 248, 0.4);
+            box-shadow: 0 16px 40px rgba(129, 140, 248, 0.08);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .status-pulse {
+            width: 8px; height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #10b981;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); }
+            70%  { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+            100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-1 { animation: fadeUp 0.6s ease forwards; }
+        .fade-2 { animation: fadeUp 0.6s 0.15s ease both; }
+        .fade-3 { animation: fadeUp 0.6s 0.3s ease both; }
+        .fade-4 { animation: fadeUp 0.6s 0.45s ease both; }
+    </style>
+</head>
+
+<body>
+    <div class="stars"></div>
+    <div class="grid-overlay"></div>
+
+    <main class="w-full max-w-3xl px-6 py-16 text-center">
+
+        <!-- Badge -->
+        <div class="fade-1 flex justify-center mb-6">
+            <span class="badge"><i class="fa-solid fa-satellite"></i> Massachusetts Space Week 2026 · OSMED Hackathon</span>
+        </div>
+
+        <!-- Title -->
+        <div class="fade-2">
+            <h1 class="text-6xl font-extrabold tracking-tight leading-none">
+                <span class="text-sky-400 glow-text">CIRCADIA</span><span class="text-white">SPACE</span>
+            </h1>
+            <p class="mt-4 text-lg text-slate-400 font-light max-w-xl mx-auto">
+                AI-Driven Scotobiology for Earth &amp; Orbit.<br>
+                Protecting the human biological clock from Boston to the Moon.
+            </p>
+            <div class="flex items-center justify-center gap-2 mt-4 text-xs text-slate-500">
+                <span class="status-pulse"></span>
+                <span>Lumina-Check AI &nbsp;·&nbsp; NASA VIIRS &nbsp;·&nbsp; Modal.com &nbsp;·&nbsp; Gemini Vision</span>
+            </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="fade-3 grid grid-cols-1 md:grid-cols-2 gap-4 mt-12 text-left">
+
+            <a href="dashboard.html" class="card-link">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);">
+                        <i class="fa-solid fa-gauge-high text-sky-400"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-sky-400">Live Demo</p>
+                        <p class="text-xs text-slate-500">Lumina-Check AI Dashboard</p>
+                    </div>
+                </div>
+                <p class="text-sm text-slate-400 flex-grow">
+                    Interact with the Circadian Efficiency Audit interface. Upload a night-sky image and watch the agentic workflow generate a Personal Circadian Health Audit.
+                </p>
+                <div class="mt-4 flex items-center gap-2 text-xs text-sky-400 font-semibold">
+                    Launch Dashboard <i class="fa-solid fa-arrow-right text-xs"></i>
+                </div>
+            </a>
+
+            <a href="slides.html" class="card-link purple">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(129,140,248,0.1);border:1px solid rgba(129,140,248,0.3);">
+                        <i class="fa-solid fa-person-chalkboard" style="color:#818cf8"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold" style="color:#818cf8">Pitch Deck</p>
+                        <p class="text-xs text-slate-500">8-Slide Presentation</p>
+                    </div>
+                </div>
+                <p class="text-sm text-slate-400 flex-grow">
+                    The full investor-ready slide deck covering the problem, solution, technical architecture, market strategy, roadmap, and vision.
+                </p>
+                <div class="mt-4 flex items-center gap-2 text-xs font-semibold" style="color:#818cf8">
+                    View Slides <i class="fa-solid fa-arrow-right text-xs"></i>
+                </div>
+            </a>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="fade-4 grid grid-cols-3 gap-3 mt-6">
+            <div class="glass-panel py-3 px-4 text-center">
+                <p class="text-2xl font-extrabold text-sky-400">99%</p>
+                <p class="text-xs text-slate-500 mt-1">U.S. pop. affected by light pollution</p>
+            </div>
+            <div class="glass-panel py-3 px-4 text-center">
+                <p class="text-2xl font-extrabold text-rose-400">$95B</p>
+                <p class="text-xs text-slate-500 mt-1">Annual sleep disorder health cost</p>
+            </div>
+            <div class="glass-panel py-3 px-4 text-center">
+                <p class="text-2xl font-extrabold" style="color:#818cf8">LEO</p>
+                <p class="text-xs text-slate-500 mt-1">Target: commercial habitat integration</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="fade-4 mt-10 text-xs text-slate-600">
+            <a href="https://github.com/phpower1/Circadia-Space" target="_blank" class="hover:text-sky-400 transition-colors inline-flex items-center gap-1">
+                <i class="fa-brands fa-github"></i> phpower1/Circadia-Space
+            </a>
+        </div>
+
+    </main>
+</body>
+</html>
