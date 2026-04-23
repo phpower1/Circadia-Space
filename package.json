@@ -1,0 +1,24 @@
+{
+  "name": "circadia-space",
+  "version": "1.0.0",
+  "description": "Circadia-Space: AI-Driven Scotobiology for Earth & Orbit",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phpower1/Circadia-Space.git"
+  },
+  "keywords": [
+    "scotobiology",
+    "circadian",
+    "analytics"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/analytics": "^1.3.1"
+  }
+}
